@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  api-gateway:
+    image: ptb.archi-lab.io/api-gateway
+    ports:
+      - "8081:8081"
+    restart: always
+    networks:
+      - ptb
+
+networks:
+  ptb:
+    external: true
