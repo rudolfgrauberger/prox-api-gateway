@@ -17,7 +17,13 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                echo "SonarQube..."
+                script {
+                    // requires SonarQube Scanner 3.2+
+                    scannerHome = tool 'TH Koeln GM SonarQube Scanner'
+                }
+                withSonarQubeEnv('TH Koeln GM SonarQube') {
+                    sh "${scannerHome}/bin/sonar-scanner"
+                }
             }
         }
         stage("Test") {
