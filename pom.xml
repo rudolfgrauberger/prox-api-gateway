@@ -8,7 +8,7 @@
   <artifactId>api-gateway</artifactId>
   <version>0.0.1-SNAPSHOT</version>
 
-  <name>api-gateway</name>
+  <name>prox-api-gateway</name>
   <description>API Gateway</description>
 
   <parent>
@@ -22,7 +22,7 @@
     <java.version>1.8</java.version>
     <spring-cloud.version>Greenwich.RELEASE</spring-cloud.version>
     <dockerfile-maven.version>1.4.10</dockerfile-maven.version>
-    <docker.image.prefix>ptb-gp-ss2019.archi-lab.io</docker.image.prefix>
+    <docker.image.prefix>docker.nexus.archi-lab.io/archilab</docker.image.prefix>
   </properties>
 
   <dependencies>
@@ -63,25 +63,6 @@
       </plugin>
 
       <plugin>
-        <groupId>com.spotify</groupId>
-        <artifactId>dockerfile-maven-plugin</artifactId>
-        <version>${dockerfile-maven.version}</version>
-        <executions>
-          <execution>
-            <id>default</id>
-            <phase>install</phase>
-            <goals>
-              <goal>build</goal>
-              <!--<goal>push</goal>-->
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <repository>${docker.image.prefix}/${project.artifactId}</repository>
-        </configuration>
-      </plugin>
-
-      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
@@ -103,6 +84,56 @@
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <groupId>com.spotify</groupId>
+        <artifactId>dockerfile-maven-plugin</artifactId>
+        <version>${dockerfile-maven.version}</version>
+        <executions>
+          <execution>
+            <id>default</id>
+            <phase>install</phase>
+            <goals>
+              <goal>build</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>tag-version</id>
+            <phase>install</phase>
+            <goals>
+              <goal>tag</goal>
+            </goals>
+            <configuration>
+              <tag>${project.version}</tag>
+            </configuration>
+          </execution>
+          <execution>
+          	<id>push-latest</id>
+          	<phase>deploy</phase>
+          	<goals>
+          	  <goal>push</goal>
+          	</goals>
+          	<configuration>
+          	  <tag>latest</tag>
+          	</configuration>
+          </execution>
+          <execution>
+            <id>push-version</id>
+            <phase>deploy</phase>
+            <goals>
+              <goal>push</goal>
+            </goals>
+            <configuration>
+              <tag>${project.version}</tag>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <repository>${docker.image.prefix}/${project.name}</repository>
+          <useMavenSettingsForAuth>true</useMavenSettingsForAuth>
+        </configuration>
+      </plugin>
+
     </plugins>
   </build>
 
